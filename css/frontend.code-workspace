@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../python"
+		},
+		{
+			"path": "../../naver_news"
+		},
+		{
+			"path": "../../Langchain"
+		},
+		{
+			"path": "../../chatdog"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "frontend",
+		"editor.tabSize": 2
+	}
+}
