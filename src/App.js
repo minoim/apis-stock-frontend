@@ -12,22 +12,22 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  const handleSearch = async (keyword, page = 1) => {
+  const handleSearch = async (keyword) => {
     try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}`);
-      if (!response.ok) {
-        throw new Error('API 요청에 실패했습니다.');
-      }
+      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        mode: 'cors'
+      });
 
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       
+      const data = await response.json();
       setNews(data.items);
       setCurrentPage(data.pagination.currentPage);
       setTotalPages(data.pagination.totalPages);
