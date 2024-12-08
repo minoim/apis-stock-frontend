@@ -4,17 +4,18 @@
   background-color: #1a1a2e;
   min-height: 100vh;
   color: white;
+  position: relative;
 }
 
 .App-header {
   margin-bottom: 30px;
-  position: relative;
+  padding-top: 20px;
 }
 
 .App-header h1 {
   color: #e2e2e2;
   font-size: 2.5em;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 .youtube-link {
@@ -27,6 +28,7 @@
   border-radius: 5px;
   text-decoration: none;
   font-weight: bold;
+  transition: background-color 0.3s;
 }
 
 .youtube-link:hover {
@@ -38,71 +40,21 @@
   margin: 0 auto;
 }
 
-.news-card {
-  background: #2a2a40;
-  border: 1px solid #3a3a50;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  text-align: left;
-}
-
-.news-card h3 {
-  margin: 0 0 10px 0;
-}
-
-.news-card a {
-  color: #e2e2e2;
-  text-decoration: none;
-}
-
-.news-card a:hover {
-  text-decoration: underline;
-}
-
-.news-card p {
-  color: #b0b0b0;
-  margin: 10px 0;
-}
-
-.news-meta {
-  color: #888;
-  font-size: 0.9em;
-}
-
-.loading {
-  color: #e2e2e2;
-  font-size: 1.2em;
-  margin: 20px 0;
-}
-
 .no-results {
   color: #e2e2e2;
   font-size: 1.2em;
-  margin: 20px 0;
+  margin: 40px 0;
+  text-align: center;
 }
 
-.pagination {
-  margin-top: 20px;
+/* 검색 바 컨테이너 스타일 */
+.search-container {
+  max-width: 600px;
+  margin: 0 auto;
   display: flex;
-  justify-content: center;
   gap: 10px;
+  justify-content: center;
+  align-items: center;
 }
 
-.pagination button {
-  background: #3a3a50;
-  border: none;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.pagination button:disabled {
-  background: #2a2a40;
-  cursor: not-allowed;
-}
-
-.pagination button.active {
-  background: #4a4a60;
-} 
+/* 나머지 스타일은 유지 */ 

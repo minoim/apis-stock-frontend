@@ -6,16 +6,16 @@ import { FaBug } from 'react-icons/fa';
 import './styles/main.css';
 
 function App() {
-  const [news, setNews] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
   const handleSearch = async (keyword, page = 1) => {
+    setHasSearched(true);
     try {
-      setIsLoading(true);
-      setError(null);
+      setLoading(true);
       
       const response = await fetch(`http://localhost:5001/api/news/search?keyword=${keyword}&page=${page}`);
       if (!response.ok) {
@@ -28,14 +28,13 @@ function App() {
         throw new Error(data.error);
       }
       
-      setNews(data.items);
+      setSearchResults(data.items);
       setCurrentPage(data.pagination.currentPage);
       setTotalPages(data.pagination.totalPages);
     } catch (error) {
-      console.error('검색 ��류:', error);
-      setError(error.message || '뉴스를 불러오는 중 오류가 발생했습니다.');
+      console.error('검색 오류:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -57,20 +56,30 @@ function App() {
         </a>
         <SearchBar onSearch={handleSearch} />
       </header>
-      {isLoading && <div className="loading">검색 중...</div>}
-      {error && <div className="error-message">{error}</div>}
-      {!isLoading && !error && (
-        <>
-          <NewsList news={news} />
-          {totalPages > 1 && (
-            <Pagination 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          )}
-        </>
-      )}
+      <main>
+        {loading ? (
+          <div className="loading">검색 중...</div>
+        ) : (
+          <>
+            <div className="news-container">
+              {hasSearched && searchResults.length === 0 ? (
+                <div className="no-results">검색 결과가 없습니다.</div>
+              ) : (
+                searchResults.map((news, index) => (
+                  <NewsCard key={index} news={news} />
+                ))
+              )}
+            </div>
+            {searchResults.length > 0 && (
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => handleSearch(searchResults[0].keyword, page)}
+              />
+            )}
+          </>
+        )}
+      </main>
     </div>
   );
 }
