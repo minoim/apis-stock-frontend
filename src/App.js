@@ -1,41 +1,46 @@
 import React, { useState } from 'react';
-import './App.css';
 import SearchBar from './components/SearchBar';
-import NewsCard from './components/NewsCard';
+import NewsList from './components/NewsList';
 import Pagination from './components/Pagination';
+import { FaBug } from 'react-icons/fa';
+import './styles/main.css';
 
 function App() {
-  const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 0,
-    totalItems: 0
-  });
+  const [news, setNews] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   const handleSearch = async (keyword, page = 1) => {
     try {
-      setLoading(true);
-      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}&page=${page}`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Accept': 'application/json',
-        }
-      });
+      setIsLoading(true);
+      setError(null);
       
+      const response = await fetch(`http://localhost:5001/api/news/search?keyword=${keyword}&page=${page}`);
+      if (!response.ok) {
+        throw new Error('API 요청에 실패했습니다.');
+      }
+
       const data = await response.json();
-      setSearchResults(data.items);
-      setPagination({
-        currentPage: page,
-        totalPages: Math.ceil(data.total / 10),
-        totalItems: data.total
-      });
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      setNews(data.items);
+      setCurrentPage(data.pagination.currentPage);
+      setTotalPages(data.pagination.totalPages);
     } catch (error) {
-      console.error('검색 오류:', error);
+      console.error('검색 ��류:', error);
+      setError(error.message || '뉴스를 불러오는 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
+  };
+
+  const handlePageChange = (page) => {
+    handleSearch(document.querySelector('.search-input').value, page);
   };
 
   return (
@@ -43,7 +48,7 @@ function App() {
       <header className="App-header">
         <h1>주식 종목 검색기</h1>
         <a 
-          href="https://www.youtube.com/@user-ju3xn2vc1r" 
+          href="https://contents.premium.naver.com/apishive/apishive56" 
           target="_blank" 
           rel="noopener noreferrer" 
           className="youtube-link"
@@ -52,30 +57,20 @@ function App() {
         </a>
         <SearchBar onSearch={handleSearch} />
       </header>
-      <main>
-        {loading ? (
-          <div className="loading">검색 중...</div>
-        ) : (
-          <>
-            <div className="news-container">
-              {searchResults.length > 0 ? (
-                searchResults.map((news, index) => (
-                  <NewsCard key={index} news={news} />
-                ))
-              ) : (
-                <div className="no-results">검색 결과가 없습니다.</div>
-              )}
-            </div>
-            {searchResults.length > 0 && (
-              <Pagination 
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                onPageChange={(page) => handleSearch(searchResults[0].keyword, page)}
-              />
-            )}
-          </>
-        )}
-      </main>
+      {isLoading && <div className="loading">검색 중...</div>}
+      {error && <div className="error-message">{error}</div>}
+      {!isLoading && !error && (
+        <>
+          <NewsList news={news} />
+          {totalPages > 1 && (
+            <Pagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }
