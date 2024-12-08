@@ -8,25 +8,30 @@
 }
 
 .visitor-count {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  color: #C5B358;
-  font-size: 0.8em;
-  background-color: rgba(0, 0, 0, 0.3);
-  padding: 5px 10px;
-  border-radius: 3px;
-}
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #C5B358;
+    font-size: 0.8em;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 3px;
+    z-index: 1; /* 다른 요소들보다 앞에 표시 */
+    max-width: 150px; /* 최대 너비 설정 */
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    margin-top: 5px; /* 상단 여백 추가 */
+  }
 
-.App-header {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  padding: 10px;
-  width: 100%;
-}
+  .App-header {
+    margin-top: 40px; /* 방문자 수 표시를 위한 상단 여백 추가 */
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    width: 100%;
+  }
 
 .App-header h1 {
   color: #C5B358;
