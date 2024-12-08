@@ -6,6 +6,14 @@
     color: white;
   }
   
+/* 방문자 수 스타일 추가 */
+.visitor-count {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #C5B358;  /* 골드 색상 */
+    font-size: 0.9em;
+  }
   .App-header {
     margin-bottom: 30px;
     display: flex;
