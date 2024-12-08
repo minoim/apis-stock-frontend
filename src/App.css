@@ -1,14 +1,36 @@
 .App {
   text-align: center;
   padding: 20px;
+  background-color: #1a1a2e;
+  min-height: 100vh;
+  color: white;
 }
 
 .App-header {
   margin-bottom: 30px;
+  position: relative;
 }
 
 .App-header h1 {
-  color: #333;
+  color: #e2e2e2;
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.youtube-link {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #ff0000;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.youtube-link:hover {
+  background-color: #cc0000;
 }
 
 .news-container {
@@ -17,8 +39,8 @@
 }
 
 .news-card {
-  background: #fff;
-  border: 1px solid #ddd;
+  background: #2a2a40;
+  border: 1px solid #3a3a50;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
@@ -30,7 +52,7 @@
 }
 
 .news-card a {
-  color: #2c3e50;
+  color: #e2e2e2;
   text-decoration: none;
 }
 
@@ -39,7 +61,7 @@
 }
 
 .news-card p {
-  color: #666;
+  color: #b0b0b0;
   margin: 10px 0;
 }
 
@@ -49,13 +71,38 @@
 }
 
 .loading {
-  color: #666;
+  color: #e2e2e2;
   font-size: 1.2em;
   margin: 20px 0;
 }
 
 .no-results {
-  color: #666;
+  color: #e2e2e2;
   font-size: 1.2em;
   margin: 20px 0;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination button {
+  background: #3a3a50;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background: #2a2a40;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background: #4a4a60;
 } 

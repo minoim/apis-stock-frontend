@@ -2,15 +2,21 @@ import React, { useState } from 'react';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import NewsCard from './components/NewsCard';
+import Pagination from './components/Pagination';
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 0,
+    totalItems: 0
+  });
 
-  const handleSearch = async (keyword) => {
+  const handleSearch = async (keyword, page = 1) => {
     try {
       setLoading(true);
-      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}`, {
+      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}&page=${page}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -19,15 +25,14 @@ function App() {
       });
       
       const data = await response.json();
-      // 검색 결과가 있는 경우에만 설정
-      if (data && data.items) {
-        setSearchResults(data.items);
-      } else {
-        setSearchResults([]); // 결과가 없으면 빈 배열로 설정
-      }
+      setSearchResults(data.items);
+      setPagination({
+        currentPage: page,
+        totalPages: Math.ceil(data.total / 10),
+        totalItems: data.total
+      });
     } catch (error) {
       console.error('검색 오류:', error);
-      setSearchResults([]); // 에러 발생 시 빈 배열로 설정
     } finally {
       setLoading(false);
     }
@@ -36,22 +41,39 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Stock News Finder</h1>
+        <h1>주식 종목 검색기</h1>
+        <a 
+          href="https://www.youtube.com/@user-ju3xn2vc1r" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="youtube-link"
+        >
+          주식매매의 정석 채널 바로가기
+        </a>
         <SearchBar onSearch={handleSearch} />
       </header>
       <main>
         {loading ? (
           <div className="loading">검색 중...</div>
         ) : (
-          <div className="news-container">
-            {searchResults.length > 0 ? (
-              searchResults.map((news, index) => (
-                <NewsCard key={index} news={news} />
-              ))
-            ) : (
-              <div className="no-results">검색 결과가 없습니다.</div>
+          <>
+            <div className="news-container">
+              {searchResults.length > 0 ? (
+                searchResults.map((news, index) => (
+                  <NewsCard key={index} news={news} />
+                ))
+              ) : (
+                <div className="no-results">검색 결과가 없습니다.</div>
+              )}
+            </div>
+            {searchResults.length > 0 && (
+              <Pagination 
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                onPageChange={(page) => handleSearch(searchResults[0].keyword, page)}
+              />
             )}
-          </div>
+          </>
         )}
       </main>
     </div>
