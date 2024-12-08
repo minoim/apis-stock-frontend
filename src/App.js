@@ -19,9 +19,15 @@ function App() {
       });
       
       const data = await response.json();
-      setSearchResults(data.items);
+      // 검색 결과가 있는 경우에만 설정
+      if (data && data.items) {
+        setSearchResults(data.items);
+      } else {
+        setSearchResults([]); // 결과가 없으면 빈 배열로 설정
+      }
     } catch (error) {
       console.error('검색 오류:', error);
+      setSearchResults([]); // 에러 발생 시 빈 배열로 설정
     } finally {
       setLoading(false);
     }
@@ -38,9 +44,13 @@ function App() {
           <div className="loading">검색 중...</div>
         ) : (
           <div className="news-container">
-            {searchResults.map((news, index) => (
-              <NewsCard key={index} news={news} />
-            ))}
+            {searchResults.length > 0 ? (
+              searchResults.map((news, index) => (
+                <NewsCard key={index} news={news} />
+              ))
+            ) : (
+              <div className="no-results">검색 결과가 없습니다.</div>
+            )}
           </div>
         )}
       </main>
