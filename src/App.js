@@ -17,7 +17,7 @@ function App() {
       setIsLoading(true);
       setError(null);
       
-      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}&page=${page}`);
+      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}`);
       if (!response.ok) {
         throw new Error('API 요청에 실패했습니다.');
       }
