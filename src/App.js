@@ -18,7 +18,7 @@ function App() {
     setHasSearched(true);
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5001/api/news/search?keyword=${keyword}&page=${page}`, {
+      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${keyword}&page=${page}`, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -83,4 +83,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
