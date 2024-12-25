@@ -5,6 +5,26 @@
   background-color: #1a1f3c;
 }
 
+.App-header {
+  padding: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.youtube-link {
+  color: #D4AF37;
+  text-decoration: none;
+  padding: 10px 20px;
+  border: 2px solid #D4AF37;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.youtube-link:hover {
+  background-color: #D4AF37;
+  color: #1a1f3c;
+}
+
 .App-main {
   flex: 1;
   display: flex;
@@ -16,8 +36,7 @@
 .search-container {
   width: 100%;
   max-width: 600px;
-  margin: 40vh auto 20px;
-  transform: translateY(-50%);
+  margin: 20px auto;
 }
 
 .results-container {
@@ -39,6 +58,15 @@
 }
 
 @media (max-width: 768px) {
+  .App-header {
+    padding: 10px;
+  }
+
+  .youtube-link {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+
   .search-container {
     padding: 0 20px;
   }

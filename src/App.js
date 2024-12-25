@@ -54,6 +54,16 @@ function App() {
 
   return (
     <div className="App">
+      <header className="App-header">
+        <a 
+          href="https://www.youtube.com/@user-stock" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="youtube-link"
+        >
+          주식매매의 정석 채널 바로가기
+        </a>
+      </header>
       <main className="App-main">
         <div className="search-container">
           <SearchBar onSearch={handleSearch} />
