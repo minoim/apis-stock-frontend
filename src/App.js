@@ -56,7 +56,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <a 
-          href="https://www.youtube.com/@user-stock" 
+          href="https://contents.premium.naver.com/apishive/apishive56" 
           target="_blank" 
           rel="noopener noreferrer"
           className="youtube-link"
