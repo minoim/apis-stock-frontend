@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import NewsCard from './components/NewsCard';
+import KeywordCard from './components/KeywordCard';
 import Pagination from './components/Pagination';
+import { extractKeywords } from './utils/wordAnalyzer';
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
+  const [keywords, setKeywords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,12 +29,21 @@ function App() {
       setSearchResults(data.items);
       setTotalResults(data.total);
       setCurrentPage(page);
+      
+      // 키워드 분석
+      const extractedKeywords = extractKeywords(data.items.map(item => item.title));
+      setKeywords(extractedKeywords);
     } catch (err) {
       setError(err.message);
       setSearchResults([]);
+      setKeywords([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleKeywordClick = (keyword) => {
+    handleSearch(keyword);
   };
 
   const handlePageChange = (newPage) => {
@@ -56,7 +68,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <a 
-          href="https://contents.premium.naver.com/apishive/apishive56" 
+          href="https://www.youtube.com/@user-stock" 
           target="_blank" 
           rel="noopener noreferrer"
           className="youtube-link"
@@ -75,6 +87,10 @@ function App() {
         
         {!loading && !error && searchResults.length > 0 && (
           <>
+            <KeywordCard 
+              keywords={keywords} 
+              onKeywordClick={handleKeywordClick}
+            />
             <div className="results-container">
               {searchResults.map((news, index) => (
                 <NewsCard key={index} news={news} />
