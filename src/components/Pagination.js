@@ -1,33 +1,48 @@
 import React from 'react';
+import './Pagination.css';
 
-function Pagination({ currentPage, totalPages, onPageChange }) {
-  const pages = Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1);
+const Pagination = ({ currentPage, totalResults, onPageChange }) => {
+  console.log('Pagination props:', { currentPage, totalResults }); // 디버깅용
+
+  const totalPages = Math.ceil(totalResults / 10);
+  
+  const handlePrevClick = () => {
+    if (currentPage > 1) {
+      console.log('이전 페이지로 이동:', currentPage - 1); // 디버깅용
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (currentPage < totalPages) {
+      console.log('다음 페이지로 이동:', currentPage + 1); // 디버깅용
+      onPageChange(currentPage + 1);
+    }
+  };
+
+  if (totalResults === 0) return null;
 
   return (
     <div className="pagination">
       <button 
-        onClick={() => onPageChange(currentPage - 1)}
+        onClick={handlePrevClick} 
         disabled={currentPage === 1}
+        className="pagination-button"
       >
         이전
       </button>
-      {pages.map(page => (
-        <button
-          key={page}
-          onClick={() => onPageChange(page)}
-          className={currentPage === page ? 'active' : ''}
-        >
-          {page}
-        </button>
-      ))}
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages || totalPages === 0}
+      <span className="page-info">
+        {currentPage} / {totalPages}
+      </span>
+      <button 
+        onClick={handleNextClick}
+        disabled={currentPage >= totalPages}
+        className="pagination-button"
       >
         다음
       </button>
     </div>
   );
-}
+};
 
 export default Pagination; 

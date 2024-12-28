@@ -10,8 +10,7 @@ function App() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [currentKeyword, setCurrentKeyword] = useState(null);
-  const [keywords, setKeywords] = useState([]);
+  const [currentKeyword, setCurrentKeyword] = useState('');
 
   const handleSearch = async (keyword, page = 1) => {
     if (!keyword) return;
@@ -20,56 +19,28 @@ function App() {
     setError(null);
     
     try {
-      if (currentKeyword !== keyword) {
-        console.log('새로운 키워드 검색:', keyword);
-        const keywordResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&display=100&start=1`);
-        if (!keywordResponse.ok) {
-          throw new Error('검색 중 오류가 발생했습니다.');
-        }
-        const keywordData = await keywordResponse.json();
-        console.log('키워드 분석용 데이터:', keywordData);
-        
-        const extractedKeywords = extractKeywords(keywordData.items.map(item => item.title));
-        setKeywords(extractedKeywords);
-        setCurrentKeyword(keyword);
-      }
-
-      const startIndex = (page - 1) * 10 + 1;
-      console.log('페이지 요청:', page, 'startIndex:', startIndex);
-      console.log('사용 키워드:', currentKeyword || keyword);
-      
-      const pageUrl = `https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(currentKeyword || keyword)}&display=10&start=${startIndex}`;
-      console.log('요청 URL:', pageUrl);
-      
-      const pageResponse = await fetch(pageUrl);
-      if (!pageResponse.ok) {
+      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+      if (!response.ok) {
         throw new Error('검색 중 오류가 발생했습니다.');
       }
-      
-      const pageData = await pageResponse.json();
-      console.log('페이지 데이터:', pageData);
-      
-      if (pageData.items && pageData.items.length > 0) {
-        setSearchResults(pageData.items);
-        setTotalResults(pageData.total);
-        setCurrentPage(page);
-      } else {
-        throw new Error('검색 결과가 없습니다.');
-      }
+      const data = await response.json();
+      setSearchResults(data.items);
+      setTotalResults(data.total);
+      setCurrentPage(page);
     } catch (err) {
-      console.error('에러 발생:', err);
       setError(err.message);
       setSearchResults([]);
-      if (currentKeyword !== keyword) {
-        setKeywords([]);
-      }
     } finally {
       setLoading(false);
     }
   };
 
   const handlePageChange = (newPage) => {
-    handleSearch(document.querySelector('input').value, newPage);
+    console.log('페이지 변경 요청:', newPage);
+    if (currentKeyword) {
+      console.log('현재 검색어로 새 페이지 검색:', currentKeyword);
+      handleSearch(currentKeyword, newPage);
+    }
   };
 
   useEffect(() => {
