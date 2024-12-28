@@ -13,43 +13,42 @@ function App() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [lastSearchKeyword, setLastSearchKeyword] = useState('');
-  const [allItems, setAllItems] = useState([]);
+  const [currentKeyword, setCurrentKeyword] = useState('');
 
-  const handleSearch = async (keyword, page = 1, isNewSearch = true) => {
+  const handleSearch = async (keyword, page = 1) => {
     if (!keyword) return;
     
     setLoading(true);
     setError(null);
-
+    
     try {
-      if (isNewSearch) {
-        const fullResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=1&display=100`);
-        if (!fullResponse.ok) {
+      // 키워드가 변경되었을 때만 키워드 분석 실행
+      if (currentKeyword !== keyword) {
+        const keywordResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&display=100`);
+        if (!keywordResponse.ok) {
           throw new Error('검색 중 오류가 발생했습니다.');
         }
-        const fullData = await fullResponse.json();
-        setAllItems(fullData.items);
-        setTotalResults(fullData.total);
-        
-        const extractedKeywords = extractKeywords(fullData.items.map(item => item.title));
+        const keywordData = await keywordResponse.json();
+        const extractedKeywords = extractKeywords(keywordData.items.map(item => item.title));
         setKeywords(extractedKeywords);
-        setLastSearchKeyword(keyword);
-        
-        setSearchResults(fullData.items.slice(0, 10));
-        setCurrentPage(1);
-      } else {
-        const startIndex = (page - 1) * 10;
-        const endIndex = startIndex + 10;
-        setSearchResults(allItems.slice(startIndex, endIndex));
-        setCurrentPage(page);
+        setCurrentKeyword(keyword);
       }
+
+      // 현재 페이지 데이터 가져오기
+      const pageResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&start=${(page-1)*10 + 1}`);
+      if (!pageResponse.ok) {
+        throw new Error('검색 중 오류가 발생했습니다.');
+      }
+      const pageData = await pageResponse.json();
+      
+      setSearchResults(pageData.items);
+      setTotalResults(pageData.total);
+      setCurrentPage(page);
     } catch (err) {
       setError(err.message);
       setSearchResults([]);
-      if (isNewSearch) {
+      if (currentKeyword !== keyword) {
         setKeywords([]);
-        setAllItems([]);
       }
     } finally {
       setLoading(false);
@@ -57,15 +56,12 @@ function App() {
   };
 
   const handlePageChange = (newPage) => {
-    handleSearch(lastSearchKeyword, newPage, false);
+    handleSearch(currentKeyword, newPage);
   };
 
   const handleKeywordClick = (keyword) => {
-    handleSearch(keyword, 1, true);
-  };
-
-  const handleNewSearch = (keyword) => {
-    handleSearch(keyword, 1, true);
+    setCurrentPage(1);
+    handleSearch(keyword, 1);
   };
 
   useEffect(() => {
@@ -96,7 +92,7 @@ function App() {
       </header>
       <main className="App-main">
         <div className="search-container">
-          <SearchBar onSearch={handleNewSearch} />
+          <SearchBar onSearch={handleSearch} />
         </div>
         
         {loading && <div className="loading">검색 중...</div>}
@@ -116,7 +112,7 @@ function App() {
             </div>
             <Pagination
               currentPage={currentPage}
-              totalResults={Math.min(allItems.length, totalResults)}
+              totalResults={totalResults}
               onPageChange={handlePageChange}
             />
           </>
