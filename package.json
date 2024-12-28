@@ -1,5 +1,5 @@
+cat > package.json << 'EOF'
 {
-<<<<<<< HEAD
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
@@ -7,23 +7,10 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-icons": "^5.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
-=======
-  "name": "news-search-frontend",
-  "version": "1.0.0",
-  "private": true,
-  "dependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "axios": "^1.7.8",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-icons": "^5.3.0",
-    "react-scripts": "^5.0.1"
->>>>>>> 78173acdfb5e938fe326160da133c0225a7e47ef
   },
   "scripts": {
     "start": "react-scripts start",
@@ -31,15 +18,12 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-<<<<<<< HEAD
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
   },
-=======
->>>>>>> 78173acdfb5e938fe326160da133c0225a7e47ef
   "browserslist": {
     "production": [
       ">0.2%",
@@ -53,3 +37,4 @@
     ]
   }
 }
+EOF
