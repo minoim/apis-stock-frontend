@@ -1,44 +1,65 @@
 .news-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 20px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
   margin-bottom: 20px;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .news-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-color: rgba(212, 175, 55, 0.2);
 }
 
 .news-card h3 {
-  margin: 0 0 10px 0;
+  margin: 0 0 15px 0;
 }
 
 .news-card a {
-  color: #D4AF37;
+  color: var(--primary-color);
   text-decoration: none;
   font-size: 1.2rem;
-  font-weight: bold;
+  font-weight: 600;
+  line-height: 1.4;
+  display: block;
+  transition: color 0.3s ease;
 }
 
 .news-card a:hover {
-  text-decoration: underline;
+  color: #e9c555;
 }
 
 .news-card p {
-  color: #ccc;
-  margin: 10px 0;
-  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 15px 0;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
 .news-card .date {
-  color: #888;
+  color: var(--text-secondary);
   font-size: 0.9rem;
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.news-card .date::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  margin-right: 8px;
 }
 
 @media (max-width: 768px) {
   .news-card {
-    padding: 15px;
+    padding: 20px;
   }
 
   .news-card a {
