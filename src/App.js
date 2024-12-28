@@ -13,45 +13,58 @@ function App() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [lastSearchKeyword, setLastSearchKeyword] = useState('');
 
-  const handleSearch = async (keyword, page = 1) => {
+  const handleSearch = async (keyword, page = 1, isNewSearch = true) => {
     if (!keyword) return;
     
     setLoading(true);
     setError(null);
-    
+
     try {
-      // 첫 페이지 검색 시 전체 결과를 가져오도록 수정
-      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=${page}&display=100`);
+      // 새로운 검색일 경우에만 전체 결과를 가져와서 키워드 분석
+      if (isNewSearch) {
+        const fullResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=1&display=100`);
+        if (!fullResponse.ok) {
+          throw new Error('검색 중 오류가 발생했습니다.');
+        }
+        const fullData = await fullResponse.json();
+        const extractedKeywords = extractKeywords(fullData.items.map(item => item.title));
+        setKeywords(extractedKeywords);
+        setLastSearchKeyword(keyword);
+      }
+
+      // 현재 페이지의 결과를 가져오기
+      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=${page}`);
       if (!response.ok) {
         throw new Error('검색 중 오류가 발생했습니다.');
       }
       const data = await response.json();
       
-      // 현재 페이지에 표시할 결과만 필터링
-      const currentPageResults = data.items.slice((page - 1) * 10, page * 10);
-      setSearchResults(currentPageResults);
+      setSearchResults(data.items);
       setTotalResults(data.total);
       setCurrentPage(page);
-      
-      // 전체 결과의 제목에서 키워드 분석
-      const extractedKeywords = extractKeywords(data.items.map(item => item.title));
-      setKeywords(extractedKeywords);
     } catch (err) {
       setError(err.message);
       setSearchResults([]);
-      setKeywords([]);
+      if (isNewSearch) {
+        setKeywords([]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handlePageChange = (newPage) => {
-    handleSearch(document.querySelector('input').value, newPage);
+    handleSearch(lastSearchKeyword, newPage, false);
   };
 
   const handleKeywordClick = (keyword) => {
-    handleSearch(keyword);
+    handleSearch(keyword, 1, true);
+  };
+
+  const handleNewSearch = (keyword) => {
+    handleSearch(keyword, 1, true);
   };
 
   useEffect(() => {
@@ -82,7 +95,7 @@ function App() {
       </header>
       <main className="App-main">
         <div className="search-container">
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={handleNewSearch} />
         </div>
         
         {loading && <div className="loading">검색 중...</div>}
