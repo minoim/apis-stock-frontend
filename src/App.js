@@ -2,18 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import SearchBar from './components/SearchBar';
 import NewsCard from './components/NewsCard';
-import KeywordCard from './components/KeywordCard';
 import Pagination from './components/Pagination';
-import { extractKeywords } from './utils/wordAnalyzer';
 
 function App() {
   const [searchResults, setSearchResults] = useState([]);
-  const [keywords, setKeywords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [currentKeyword, setCurrentKeyword] = useState('');
+  const [currentKeyword, setCurrentKeyword] = useState(null);
+  const [keywords, setKeywords] = useState([]);
 
   const handleSearch = async (keyword, page = 1) => {
     if (!keyword) return;
@@ -22,26 +20,34 @@ function App() {
     setError(null);
     
     try {
-      // 키워드가 변경되었을 때만 키워드 분석 실행
       if (currentKeyword !== keyword) {
+        console.log('새로운 키워드 검색:', keyword);
         const keywordResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&display=100&start=1`);
         if (!keywordResponse.ok) {
           throw new Error('검색 중 오류가 발생했습니다.');
         }
         const keywordData = await keywordResponse.json();
+        console.log('키워드 분석용 데이터:', keywordData);
+        
         const extractedKeywords = extractKeywords(keywordData.items.map(item => item.title));
         setKeywords(extractedKeywords);
         setCurrentKeyword(keyword);
       }
 
-      // 현재 페이지 데이터 가져오기
       const startIndex = (page - 1) * 10 + 1;
-      const pageResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(currentKeyword || keyword)}&display=10&start=${startIndex}`);
+      console.log('페이지 요청:', page, 'startIndex:', startIndex);
+      console.log('사용 키워드:', currentKeyword || keyword);
       
+      const pageUrl = `https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(currentKeyword || keyword)}&display=10&start=${startIndex}`;
+      console.log('요청 URL:', pageUrl);
+      
+      const pageResponse = await fetch(pageUrl);
       if (!pageResponse.ok) {
         throw new Error('검색 중 오류가 발생했습니다.');
       }
+      
       const pageData = await pageResponse.json();
+      console.log('페이지 데이터:', pageData);
       
       if (pageData.items && pageData.items.length > 0) {
         setSearchResults(pageData.items);
@@ -51,6 +57,7 @@ function App() {
         throw new Error('검색 결과가 없습니다.');
       }
     } catch (err) {
+      console.error('에러 발생:', err);
       setError(err.message);
       setSearchResults([]);
       if (currentKeyword !== keyword) {
@@ -62,12 +69,7 @@ function App() {
   };
 
   const handlePageChange = (newPage) => {
-    handleSearch(currentKeyword, newPage);
-  };
-
-  const handleKeywordClick = (keyword) => {
-    setCurrentPage(1);
-    handleSearch(keyword, 1);
+    handleSearch(document.querySelector('input').value, newPage);
   };
 
   useEffect(() => {
@@ -88,7 +90,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <a 
-          href="https://www.youtube.com/@user-stock" 
+          href="https://contents.premium.naver.com/apishive/apishive56" 
           target="_blank" 
           rel="noopener noreferrer"
           className="youtube-link"
@@ -98,7 +100,7 @@ function App() {
       </header>
       <main className="App-main">
         <div className="search-container">
-          <SearchBar onSearch={(keyword) => handleSearch(keyword, 1)} />
+          <SearchBar onSearch={handleSearch} />
         </div>
         
         {loading && <div className="loading">검색 중...</div>}
@@ -107,10 +109,6 @@ function App() {
         
         {!loading && !error && searchResults.length > 0 && (
           <>
-            <KeywordCard 
-              keywords={keywords} 
-              onKeywordClick={handleKeywordClick}
-            />
             <div className="results-container">
               {searchResults.map((news, index) => (
                 <NewsCard key={index} news={news} />
