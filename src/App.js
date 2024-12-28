@@ -14,6 +14,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const [lastSearchKeyword, setLastSearchKeyword] = useState('');
+  const [allItems, setAllItems] = useState([]);
 
   const handleSearch = async (keyword, page = 1, isNewSearch = true) => {
     if (!keyword) return;
@@ -22,33 +23,33 @@ function App() {
     setError(null);
 
     try {
-      // 새로운 검색일 경우에만 전체 결과를 가져와서 키워드 분석
       if (isNewSearch) {
         const fullResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=1&display=100`);
         if (!fullResponse.ok) {
           throw new Error('검색 중 오류가 발생했습니다.');
         }
         const fullData = await fullResponse.json();
+        setAllItems(fullData.items);
+        setTotalResults(fullData.total);
+        
         const extractedKeywords = extractKeywords(fullData.items.map(item => item.title));
         setKeywords(extractedKeywords);
         setLastSearchKeyword(keyword);
+        
+        setSearchResults(fullData.items.slice(0, 10));
+        setCurrentPage(1);
+      } else {
+        const startIndex = (page - 1) * 10;
+        const endIndex = startIndex + 10;
+        setSearchResults(allItems.slice(startIndex, endIndex));
+        setCurrentPage(page);
       }
-
-      // 현재 페이지의 결과를 가져오기
-      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=${page}`);
-      if (!response.ok) {
-        throw new Error('검색 중 오류가 발생했습니다.');
-      }
-      const data = await response.json();
-      
-      setSearchResults(data.items);
-      setTotalResults(data.total);
-      setCurrentPage(page);
     } catch (err) {
       setError(err.message);
       setSearchResults([]);
       if (isNewSearch) {
         setKeywords([]);
+        setAllItems([]);
       }
     } finally {
       setLoading(false);
@@ -115,7 +116,7 @@ function App() {
             </div>
             <Pagination
               currentPage={currentPage}
-              totalResults={totalResults}
+              totalResults={Math.min(allItems.length, totalResults)}
               onPageChange={handlePageChange}
             />
           </>
