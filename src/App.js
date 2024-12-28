@@ -21,16 +21,20 @@ function App() {
     setError(null);
     
     try {
-      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=${page}`);
+      // 첫 페이지 검색 시 전체 결과를 가져오도록 수정
+      const response = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&page=${page}&display=100`);
       if (!response.ok) {
         throw new Error('검색 중 오류가 발생했습니다.');
       }
       const data = await response.json();
-      setSearchResults(data.items);
+      
+      // 현재 페이지에 표시할 결과만 필터링
+      const currentPageResults = data.items.slice((page - 1) * 10, page * 10);
+      setSearchResults(currentPageResults);
       setTotalResults(data.total);
       setCurrentPage(page);
       
-      // 키워드 분석
+      // 전체 결과의 제목에서 키워드 분석
       const extractedKeywords = extractKeywords(data.items.map(item => item.title));
       setKeywords(extractedKeywords);
     } catch (err) {
@@ -42,12 +46,12 @@ function App() {
     }
   };
 
-  const handleKeywordClick = (keyword) => {
-    handleSearch(keyword);
-  };
-
   const handlePageChange = (newPage) => {
     handleSearch(document.querySelector('input').value, newPage);
+  };
+
+  const handleKeywordClick = (keyword) => {
+    handleSearch(keyword);
   };
 
   useEffect(() => {
