@@ -24,7 +24,7 @@ function App() {
     try {
       // 키워드가 변경되었을 때만 키워드 분석 실행
       if (currentKeyword !== keyword) {
-        const keywordResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&display=100`);
+        const keywordResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&display=100&start=1`);
         if (!keywordResponse.ok) {
           throw new Error('검색 중 오류가 발생했습니다.');
         }
@@ -35,15 +35,21 @@ function App() {
       }
 
       // 현재 페이지 데이터 가져오기
-      const pageResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(keyword)}&start=${(page-1)*10 + 1}`);
+      const startIndex = (page - 1) * 10 + 1;
+      const pageResponse = await fetch(`https://apis-stock-backend.onrender.com/api/news/search?keyword=${encodeURIComponent(currentKeyword || keyword)}&display=10&start=${startIndex}`);
+      
       if (!pageResponse.ok) {
         throw new Error('검색 중 오류가 발생했습니다.');
       }
       const pageData = await pageResponse.json();
       
-      setSearchResults(pageData.items);
-      setTotalResults(pageData.total);
-      setCurrentPage(page);
+      if (pageData.items && pageData.items.length > 0) {
+        setSearchResults(pageData.items);
+        setTotalResults(pageData.total);
+        setCurrentPage(page);
+      } else {
+        throw new Error('검색 결과가 없습니다.');
+      }
     } catch (err) {
       setError(err.message);
       setSearchResults([]);
@@ -92,7 +98,7 @@ function App() {
       </header>
       <main className="App-main">
         <div className="search-container">
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={(keyword) => handleSearch(keyword, 1)} />
         </div>
         
         {loading && <div className="loading">검색 중...</div>}
